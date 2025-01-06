@@ -1,9 +1,10 @@
 geopandas
-numpy
+numpy>=1.23.0
 pandas
 pydeck
 streamlit
 shapely
 requests
 beautifulsoup4
-re
+fiona
+pyproj
