@@ -9,9 +9,66 @@ from shapely.geometry import shape, Point
 import requests
 from bs4 import BeautifulSoup
 import re
-from datetime import datetime
 import datetime
+import requests
+from bs4 import BeautifulSoup
+import requests
 
+def download_bond_data():
+    url = "https://www.nsw.gov.au/housing-and-construction/rental-forms-surveys-and-data/rental-bond-data"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    bond_lodgements_section = soup.find('h2', string='Bond lodgements')
+    if bond_lodgements_section:
+        first_link = bond_lodgements_section.find_next('a', href=re.compile(r'\.xlsx$'))
+        if first_link:
+            file_url = "https://www.nsw.gov.au" + first_link['href']
+            file_name = first_link.text.strip()
+
+            file_response = requests.get(file_url)
+            if file_response.status_code == 200:
+                if not os.path.exists('downloads'):
+                    os.makedirs('downloads')
+
+                file_path = os.path.join('downloads', file_name)
+                with open(file_path, 'wb') as file:
+                    file.write(file_response.content)
+                print(f"Downloaded: {file_name}")
+            else:
+                print("Failed to download the file")
+        else:
+            print("No XLSX link found in the Bond lodgements section")
+    else:
+        print("Bond lodgements section not found")
+
+ 
+
+def download_latest_rental_bond_data():
+    current_datetime = datetime.datetime.now()
+    current_day = current_datetime.day
+    current_hour = current_datetime.hour
+    current_minute = current_datetime.minute
+    
+    last_run_file = "last_run.txt"
+    
+    if os.path.exists(last_run_file):
+        with open(last_run_file, "r") as file:
+            last_run = file.read()
+        
+        if last_run == f"{current_day}-{current_hour}-{current_minute}":
+            print("Script already ran today at 12:00. No download will occur.")
+            return
+
+    if current_day == 11 and current_hour == 12 and current_minute == 0:
+        download_bond_data()
+        
+        with open(last_run_file, "w") as file:
+            file.write(f"{current_day}-{current_hour}-{current_minute}")
+    else:
+        print("It's not the 11th day at 12:00. No download will occur.")
+
+        
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
 @st.cache_data
@@ -183,6 +240,8 @@ selected_dwelling = st.multiselect(
 )
 
 with st.spinner('Updating visualization...'):
+    try:
+        download_latest_rental_bond_data()
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
     merged_df = process_geojson_data(gdf, filtered_data)
     
