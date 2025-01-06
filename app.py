@@ -91,7 +91,6 @@ def process_geojson_data(_gdf, postcode_data):
     return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
 
 @st.cache_data
-@st.cache_data
 def create_map(merged_df):
     if merged_df.empty:
         st.write("No properties available for the selected filters.")
