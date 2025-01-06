@@ -22,7 +22,6 @@ def get_newest_file():
 
 @st.cache_data
 def download_data(data):
-    # Pre-process GeoJSON and store as GeoDataFrame for faster processing
     gdf = pd.read_csv('geo_data.csv')
     gdf['nsw_loca_2'] = gdf['nsw_loca_2'].str.title()
     
@@ -36,7 +35,6 @@ def download_data(data):
         'Weekly Rent': 'object'
     }
     
-     
     bonds = pd.read_excel(
         'downloads/Rental bond lodgement data - November 2024 (XLSX 693.72KB)',
         header=2,
@@ -44,12 +42,10 @@ def download_data(data):
         engine='openpyxl'
     )
 
-    
     return gdf, Sydney_area_postcode, bonds
 
 @st.cache_data
 def get_data(Sydney_area_postcode, bonds, bedrooms, dwelling):
-    # Filter data efficiently using boolean indexing
     mask = (bonds['Bedrooms'] == bedrooms) & \
            (bonds['Weekly Rent'] != 'U') & \
            (bonds['Dwelling Type'].isin(dwelling))
@@ -57,7 +53,6 @@ def get_data(Sydney_area_postcode, bonds, bedrooms, dwelling):
     filtered_bonds = bonds[mask].copy()
     filtered_bonds['Weekly Rent'] = pd.to_numeric(filtered_bonds['Weekly Rent'], errors='coerce')
     
-    # Use more efficient groupby operation
     prices = filtered_bonds.groupby('Postcode', observed=True)['Weekly Rent'].median().reset_index()
     prices.rename(columns={'Weekly Rent': 'Median_Weekly_Rent'}, inplace=True)
     
@@ -65,7 +60,6 @@ def get_data(Sydney_area_postcode, bonds, bedrooms, dwelling):
 
 @st.cache_data
 def process_geojson_data(_gdf, postcode_data):
-    # Perform spatial join using GeoDataFrame
     merged_data = pd.merge(
         postcode_data,
         _gdf,
@@ -76,29 +70,23 @@ def process_geojson_data(_gdf, postcode_data):
     if merged_data['geometry'].dtype == 'object':
         merged_data['geometry'] = gpd.GeoSeries.from_wkt(merged_data['geometry'])
 
-    # Ensure 'geometry' is recognized as valid geometry objects
     merged_data = gpd.GeoDataFrame(merged_data, geometry='geometry')
     
-    # Check if the conversion worked
-    print(merged_data['geometry'].head())  # Check if the conversion was successful
-    
-    # Now you can safely apply the GeoJSON conversion
     merged_data['Geolocation'] = merged_data['geometry'].apply(
         lambda x: json.loads(gpd.GeoSeries([x]).to_json())['features'][0]['geometry']
     )
-
     
     return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
 
 @st.cache_data
-def create_map(merged_df):
-    if merged_df.empty:
-        st.write("No properties available for the selected filters.")
+def create_map(_merged_df):
+    if _merged_df.empty:
+        st.write("No properties found for the selected filters.")
         return None
     
     gdf = gpd.GeoDataFrame(
-        merged_df,
-        geometry=[shape(geo) for geo in merged_df['Geolocation']]
+        _merged_df,
+        geometry=[shape(geo) for geo in _merged_df['Geolocation']]
     )
     
     gdf['centroid'] = gdf.geometry.centroid
@@ -148,7 +136,6 @@ def create_map(merged_df):
         }
     )
 
-
 st.title("Explore Sydney's Latest Rental Trends")
 
 st.markdown("""
@@ -192,9 +179,10 @@ with st.spinner('Updating visualization...'):
     merged_df = process_geojson_data(gdf, filtered_data)
     map_object = create_map(merged_df)
     
-    if map_object is not None:
+    if map_object:
         st.pydeck_chart(map_object)
-
+    else:
+        st.write("No properties found for the selected filters.")
 
 st.markdown("""
 Created by a Data Scientist **Magdalena Kortas**. Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/mkortas/).
