@@ -185,10 +185,17 @@ selected_dwelling = st.multiselect(
 with st.spinner('Updating visualization...'):
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
     merged_df = process_geojson_data(gdf, filtered_data)
-    map_object = create_map(merged_df)
     
-    if map_object is not None:
-        st.pydeck_chart(map_object)
+    if merged_df.empty:
+        st.write("No properties found for the selected filters.")
+    else:
+        try:
+            map_object = create_map(merged_df)
+            if map_object:
+                st.pydeck_chart(map_object)
+        except Exception as ex:
+            st.write(f"An error occurred while creating the map: {ex}")
+            print(f"Error: {ex}")
 
 st.markdown("""
 The map uses color coding to represent different rental price ranges:
