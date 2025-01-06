@@ -240,8 +240,7 @@ selected_dwelling = st.multiselect(
 )
 
 with st.spinner('Updating visualization...'):
-    try:
-        download_latest_rental_bond_data()
+    download_latest_rental_bond_data()
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
     merged_df = process_geojson_data(gdf, filtered_data)
     
