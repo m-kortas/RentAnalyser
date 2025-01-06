@@ -91,9 +91,10 @@ def process_geojson_data(_gdf, postcode_data):
     return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
 
 @st.cache_data
+@st.cache_data
 def create_map(merged_df):
     if merged_df.empty:
-        st.write("No data available for the selected filters.")
+        st.write("No properties available for the selected filters.")
         return None
     
     gdf = gpd.GeoDataFrame(
@@ -117,7 +118,6 @@ def create_map(merged_df):
         colors[rents >= q75] = [255, 80, 50, 180]
         return colors.tolist()
 
-    
     gdf['color'] = get_colors(gdf['Median_Weekly_Rent'].values)
     
     view_state = pdk.ViewState(
@@ -148,6 +148,7 @@ def create_map(merged_df):
             "style": {"backgroundColor": "steelblue", "color": "white"}
         }
     )
+
 
 st.title("Explore Sydney's Latest Rental Trends")
 
@@ -191,7 +192,10 @@ with st.spinner('Updating visualization...'):
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
     merged_df = process_geojson_data(gdf, filtered_data)
     map_object = create_map(merged_df)
-    st.pydeck_chart(map_object)
+    
+    if map_object is not None:
+        st.pydeck_chart(map_object)
+
 
 st.markdown("""
 Created by a Data Scientist **Magdalena Kortas**. Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/mkortas/).
