@@ -9,3 +9,5 @@ beautifulsoup4
 fiona
 pyproj
 openpyxl
+requests
+bs4 
