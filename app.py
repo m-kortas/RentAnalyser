@@ -155,19 +155,12 @@ st.title("Explore Sydney's Latest Rental Trends")
 st.markdown("""
 This app presents real rental data sourced directly from **NSW Government**, the most up-to-date and reliable source available. 
 The data is generally one month behind, as it reflects rental information collected at the start of each month for the previous month.
-The app is automatically updated on the **11th day of each month** to ensure the latest data is presented.
+The app is updated on the **11th day of each month** to ensure the latest data is presented.
+Missing data for a particular suburb means that no property of this type was rented in the previous month in that area.
 """)
 
-st.markdown("""
-The map uses color coding to represent different rental price ranges:
 
-- **Light Blue**: Rent prices up to the 25th percentile (lower range).
-- **Sky Blue**: Rent prices between the 25th and 50th percentiles (moderate range).
-- **Yellow**: Rent prices between the 50th percentile and 75th percentile(higher middle range).
-- **Red**: Rent prices above 75th percentile (premium range).
 
-These color gradients help visualize the distribution of rental prices across Sydney, making it easier to identify areas with lower or higher rent prices.
-""")
 
 with st.spinner('Loading...'):
     bonds_data = get_newest_file()
@@ -197,6 +190,16 @@ with st.spinner('Updating visualization...'):
     if map_object is not None:
         st.pydeck_chart(map_object)
 
+st.markdown("""
+The map uses color coding to represent different rental price ranges:
+
+- **Light Blue**: Rent prices up to the 25th percentile (lower range).
+- **Sky Blue**: Rent prices between the 25th and 50th percentiles (moderate range).
+- **Yellow**: Rent prices between the 50th percentile and 75th percentile(higher middle range).
+- **Red**: Rent prices above 75th percentile (premium range).
+
+These color gradients help visualize the distribution of rental prices across Sydney, making it easier to identify areas with lower or higher rent prices.
+""")
 
 st.markdown("""
 Created by a Data Scientist **Magdalena Kortas**. Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/mkortas/).
