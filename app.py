@@ -23,8 +23,7 @@ def get_newest_file():
 @st.cache_data
 def download_data(data):
     # Pre-process GeoJSON and store as GeoDataFrame for faster processing
-    gdf = gpd.read_file('NSW_suburb.geojson')
-    gdf = gdf[['nsw_loca_2', 'geometry']].copy()
+    gdf = pd.read_csv('geo_data.csv')
     gdf['nsw_loca_2'] = gdf['nsw_loca_2'].str.title()
     
     Sydney_area_postcode = pd.read_csv('sydney_d.csv')
@@ -37,12 +36,14 @@ def download_data(data):
         'Weekly Rent': 'object'
     }
     
+     
     bonds = pd.read_excel(
-        data,
+        'downloads/Rental bond lodgement data - November 2024 (XLSX 693.72KB)',
         header=2,
         usecols=['Postcode', 'Bedrooms', 'Dwelling Type', 'Weekly Rent'],
-        dtype=dtype_dict
+        engine='openpyxl'
     )
+
     
     return gdf, Sydney_area_postcode, bonds
 
@@ -72,9 +73,20 @@ def process_geojson_data(_gdf, postcode_data):
         right_on='nsw_loca_2',
         how='inner'
     )
+    if merged_data['geometry'].dtype == 'object':
+        merged_data['geometry'] = gpd.GeoSeries.from_wkt(merged_data['geometry'])
+
+    # Ensure 'geometry' is recognized as valid geometry objects
+    merged_data = gpd.GeoDataFrame(merged_data, geometry='geometry')
     
-    # Convert geometry to GeoJSON format for pydeck
-    merged_data['Geolocation'] = merged_data['geometry'].apply(lambda x: json.loads(gpd.GeoSeries([x]).to_json())['features'][0]['geometry'])
+    # Check if the conversion worked
+    print(merged_data['geometry'].head())  # Check if the conversion was successful
+    
+    # Now you can safely apply the GeoJSON conversion
+    merged_data['Geolocation'] = merged_data['geometry'].apply(
+        lambda x: json.loads(gpd.GeoSeries([x]).to_json())['features'][0]['geometry']
+    )
+
     
     return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
 
