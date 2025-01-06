@@ -1,0 +1,9 @@
+geopandas
+numpy
+pandas
+pydeck
+streamlit
+shapely
+requests
+beautifulsoup4
+re
