@@ -78,7 +78,8 @@ def download_latest_rental_bond_data():
             file.write(str(current_day))
     else:
         print(f"Current day is {current_day}, waiting for day 12 to download new data")
-        
+
+download_latest_rental_bond_data()
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
 @st.cache_data
@@ -259,7 +260,6 @@ selected_dwelling = st.multiselect(
 logging.info(f"User searched with Bedrooms: {selected_bedrooms}, Dwelling Types: {selected_dwelling}")
 
 with st.spinner('Updating visualization...'):
-    download_latest_rental_bond_data()
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
     merged_df = process_geojson_data(gdf, filtered_data)
     
