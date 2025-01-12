@@ -223,7 +223,7 @@ Missing data for a particular suburb means that no property of this type was ren
 bonds_data = get_newest_file()
 
 st.markdown(f"""
-Currently displaying: **{display_name}**
+Currently displaying: **{bonds_data}**
 """)
 
 
