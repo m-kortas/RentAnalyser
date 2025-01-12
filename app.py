@@ -77,9 +77,10 @@ st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
 @st.cache_data
 def get_newest_file():
-    files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
+    files = [f for f in os.listdir('downloads') if f.endswith('.xlsx')]
+    if not files:
+        raise FileNotFoundError("No Excel files found in downloads directory")
     newest_file = max(files, key=lambda f: os.path.getmtime(os.path.join('downloads', f)))
-    print(newest_file)
     return os.path.join('downloads', newest_file)
 
 @st.cache_data
