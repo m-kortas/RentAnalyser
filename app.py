@@ -49,6 +49,8 @@ def download_latest_rental_bond_data():
     current_day = current_datetime.day
     current_hour = current_datetime.hour
     current_minute = current_datetime.minute
+
+    print(current_day, current_hour, current_minute)
     
     last_run_file = "last_run.txt"
     
@@ -59,7 +61,7 @@ def download_latest_rental_bond_data():
         if last_run == f"{current_day}-{current_hour}-{current_minute}":
             print("Script already ran today at 12:00. No download will occur.")
             return
-
+    
     if current_day == 11 and current_hour == 12 and current_minute == 0:
         download_bond_data()
         
