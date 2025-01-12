@@ -13,6 +13,8 @@ import datetime
 import logging
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
+st.cache_data.clear()
+
 
 
 def download_bond_data():
@@ -83,7 +85,7 @@ st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 def get_newest_file():
     files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
     newest_file = max(files, key=lambda f: os.path.getmtime(os.path.join('downloads', f)))
-    print(newest_file)
+    logging.info(newest_file)
     return newest_file
     
 @st.cache_data
