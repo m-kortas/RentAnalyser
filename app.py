@@ -233,7 +233,7 @@ Currently displaying: **{cleaned_text}**
 
 
 with st.spinner('Loading...'):
-    bonds_data = get_newest_file()
+  #  bonds_data = get_newest_file()
     bonds_path = os.path.join('downloads',bonds_data)
     logging.info(bonds_path)
     gdf, Sydney_area_postcode, bonds = download_data(bonds_path)
