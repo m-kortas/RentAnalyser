@@ -10,9 +10,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import datetime
-import requests
-from bs4 import BeautifulSoup
-import requests
 
 def download_bond_data():
     url = "https://www.nsw.gov.au/housing-and-construction/rental-forms-surveys-and-data/rental-bond-data"
@@ -67,7 +64,6 @@ def download_latest_rental_bond_data():
             else:
                 print("Empty last run file found, will proceed with check")
     
-    # Check if it's the 11th day of the month
     if current_day == 12:
         download_bond_data()
         
@@ -75,7 +71,7 @@ def download_latest_rental_bond_data():
         with open(last_run_file, "w") as file:
             file.write(str(current_day))
     else:
-        print(f"Current day is {current_day}, waiting for day 11 to download new data")
+        print(f"Current day is {current_day}, waiting for day 12 to download new data")
         
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
@@ -219,7 +215,7 @@ st.title("Explore Sydney's Latest Rental Trends")
 st.markdown("""
 This app presents real rental data sourced directly from **NSW Government**, the most up-to-date and reliable source available. 
 The data is generally one month behind, as it reflects rental information collected at the start of each month for the previous month.
-The app is updated on the **11th day of each month** to ensure the latest data is presented.
+The app is updated on the **12th day of each month** to ensure the latest data is presented.
 Missing data for a particular suburb means that no property of this type was rented in the previous month in that area.
 """)
 
