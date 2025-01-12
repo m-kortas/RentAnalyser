@@ -50,7 +50,7 @@ def download_latest_rental_bond_data():
     current_hour = current_datetime.hour
     current_minute = current_datetime.minute
 
-    print(current_day, current_hour, current_minute)
+    
     
     last_run_file = "last_run.txt"
     
@@ -68,7 +68,7 @@ def download_latest_rental_bond_data():
         with open(last_run_file, "w") as file:
             file.write(f"{current_day}-{current_hour}-{current_minute}")
     else:
-        print("It's not the 11th day at 12:00. No download will occur.")
+        print(current_day, current_hour, current_minute)
 
         
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
