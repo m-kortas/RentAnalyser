@@ -80,7 +80,7 @@ def get_newest_file():
     files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
     newest_file = max(files, key=lambda f: os.path.getmtime(os.path.join('downloads', f)))
     print(newest_file)
-    return os.path.join('downloads', newest_file)
+    return newest_file
     
 @st.cache_data
 def download_data(data):
@@ -220,12 +220,17 @@ The app is updated on the **12th day of each month** to ensure the latest data i
 Missing data for a particular suburb means that no property of this type was rented in the previous month in that area.
 """)
 
+bonds_data = get_newest_file()
 
+st.markdown(f"""
+Currently displaying: **{display_name}**
+""")
 
 
 with st.spinner('Loading...'):
     bonds_data = get_newest_file()
-    gdf, Sydney_area_postcode, bonds = download_data(bonds_data)
+    bonds_path = os.path.join('downloads',bonds_data)
+    gdf, Sydney_area_postcode, bonds = download_data(bonds_path)
 
 bedroom_options = ['0', '1', '2', '3', '4', '5']
 dwelling_options = ['H', 'T', 'F']
