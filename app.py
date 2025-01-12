@@ -11,6 +11,11 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 
+if "logs" not in st.session_state:
+    st.session_state["logs"] = []
+
+
+
 def download_bond_data():
     url = "https://www.nsw.gov.au/housing-and-construction/rental-forms-surveys-and-data/rental-bond-data"
     response = requests.get(url)
@@ -248,6 +253,16 @@ selected_dwelling = st.multiselect(
     dwelling_options,
     default=default_dwelling
 )
+
+search_log = {
+    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "bedrooms": selected_bedrooms,
+    "dwelling_types": selected_dwelling
+}
+st.session_state["logs"].append(search_log)
+
+st.subheader("Search Logs")
+st.dataframe(pd.DataFrame(st.session_state["logs"]))
 
 with st.spinner('Updating visualization...'):
     download_latest_rental_bond_data()
