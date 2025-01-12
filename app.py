@@ -47,29 +47,24 @@ def download_bond_data():
 def download_latest_rental_bond_data():
     current_datetime = datetime.datetime.now()
     current_day = current_datetime.day
-    current_hour = current_datetime.hour
-    current_minute = current_datetime.minute
-
-    
     
     last_run_file = "last_run.txt"
     
     if os.path.exists(last_run_file):
         with open(last_run_file, "r") as file:
-            last_run = file.read()
+            last_run_day = int(file.read().strip())
         
-        if last_run == f"{current_day}-{current_hour}-{current_minute}":
-            print("Script already ran today at 12:00. No download will occur.")
+        if last_run_day == current_day:
+            print("Script already ran today. No download will occur.")
             return
     
-    if current_day == 11 and current_hour == 12 and current_minute == 0:
+    if current_day == 12:
         download_bond_data()
         
         with open(last_run_file, "w") as file:
-            file.write(f"{current_day}-{current_hour}-{current_minute}")
+            file.write(str(current_day))
     else:
-        print(current_day, current_hour, current_minute)
-
+        print(f"Current day is {current_day}")
         
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
