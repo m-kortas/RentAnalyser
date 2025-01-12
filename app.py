@@ -261,9 +261,6 @@ search_log = {
 }
 st.session_state["logs"].append(search_log)
 
-st.subheader("Search Logs")
-st.dataframe(pd.DataFrame(st.session_state["logs"]))
-
 with st.spinner('Updating visualization...'):
     download_latest_rental_bond_data()
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
