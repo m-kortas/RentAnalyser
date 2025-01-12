@@ -68,7 +68,7 @@ def download_latest_rental_bond_data():
                 print("Empty last run file found, will proceed with check")
     
     # Check if it's the 11th day of the month
-    if current_day == 11:
+    if current_day == 12:
         download_bond_data()
         
         # Update the last run file with just the day
@@ -155,7 +155,6 @@ def process_geojson_data(_gdf, postcode_data):
     
     return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
 
-@st.cache_data
 @st.cache_data
 def create_map(merged_df):
     if merged_df.empty:
