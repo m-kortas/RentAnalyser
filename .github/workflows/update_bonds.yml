@@ -1,0 +1,72 @@
+name: Update Bond Data
+
+on:
+  schedule:
+    - cron: '0 0 12 * *'  # Runs at midnight on the 12th of every month
+  workflow_dispatch:  # Allows manual trigger of the workflow
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas requests beautifulsoup4 openpyxl
+    
+    - name: Create downloads directory
+      run: mkdir -p downloads
+    
+    - name: Run download script
+      run: |
+        python - <<EOF
+        import requests
+        from bs4 import BeautifulSoup
+        import re
+        import os
+
+        def download_bond_data():
+            url = "https://www.nsw.gov.au/housing-and-construction/rental-forms-surveys-and-data/rental-bond-data"
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            bond_lodgements_section = soup.find('h2', string='Bond lodgements')
+            if bond_lodgements_section:
+                first_link = bond_lodgements_section.find_next('a', href=re.compile(r'\.xlsx$'))
+                if first_link:
+                    file_url = "https://www.nsw.gov.au" + first_link['href']
+                    file_name = first_link.text.strip()
+
+                    file_response = requests.get(file_url)
+                    if file_response.status_code == 200:
+                        file_path = os.path.join('downloads', file_name)
+                        with open(file_path, 'wb') as file:
+                            file.write(file_response.content)
+                        print(f"Downloaded: {file_name}")
+                        return True
+            return False
+
+        if download_bond_data():
+            print("Download successful")
+        else:
+            print("Download failed")
+            exit(1)
+        EOF
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add downloads/
+        git commit -m "Update bond data for $(date +'%B %Y')" || exit 0
+        git push
