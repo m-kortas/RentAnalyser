@@ -9,5 +9,6 @@ beautifulsoup4
 fiona
 pyproj
 openpyxl
-requests
 bs4 
+
+streamlit>=1.24.0
