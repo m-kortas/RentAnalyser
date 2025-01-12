@@ -50,21 +50,32 @@ def download_latest_rental_bond_data():
     
     last_run_file = "last_run.txt"
     
+    # Check if we've already run today
     if os.path.exists(last_run_file):
         with open(last_run_file, "r") as file:
-            last_run_day = int(file.read().strip())
-        
-        if last_run_day == current_day:
-            print("Script already ran today. No download will occur.")
-            return
+            content = file.read().strip()
+            # Only try to convert to int if the file has content
+            if content:
+                try:
+                    last_run_day = int(content)
+                    if last_run_day == current_day:
+                        print("Script already ran today. No download will occur.")
+                        return
+                except ValueError:
+                    # If file content is invalid, treat it as if file doesn't exist
+                    print("Invalid last run date found, will proceed with check")
+            else:
+                print("Empty last run file found, will proceed with check")
     
-    if current_day == 12:
+    # Check if it's the 11th day of the month
+    if current_day == 11:
         download_bond_data()
         
+        # Update the last run file with just the day
         with open(last_run_file, "w") as file:
             file.write(str(current_day))
     else:
-        print(f"Current day is {current_day}")
+        print(f"Current day is {current_day}, waiting for day 11 to download new data")
         
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 
