@@ -97,10 +97,10 @@ def download_data(data):
         'Dwelling Type': 'category',
         'Weekly Rent': 'object'
     }
-    
+
+    print(data)
      
-    bonds = pd.read_excel(
-        'downloads/Rental bond lodgement data - November 2024 (XLSX 693.72KB)',
+    bonds = pd.read_excel(data,
         header=2,
         usecols=['Postcode', 'Bedrooms', 'Dwelling Type', 'Weekly Rent'],
         engine='openpyxl'
