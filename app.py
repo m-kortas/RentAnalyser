@@ -10,9 +10,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import datetime
-
-if "logs" not in st.session_state:
-    st.session_state["logs"] = []
+import logging
+logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
 
 
@@ -254,12 +253,7 @@ selected_dwelling = st.multiselect(
     default=default_dwelling
 )
 
-search_log = {
-    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    "bedrooms": selected_bedrooms,
-    "dwelling_types": selected_dwelling
-}
-st.session_state["logs"].append(search_log)
+logging.info(f"User searched with Bedrooms: {selected_bedrooms}, Dwelling Types: {selected_dwelling}")
 
 with st.spinner('Updating visualization...'):
     download_latest_rental_bond_data()
