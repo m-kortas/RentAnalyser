@@ -285,3 +285,9 @@ These color gradients help visualize the distribution of rental prices across Sy
 st.markdown("""
 Created by a Data Scientist **Magdalena Kortas**. Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/mkortas/).
 """)
+
+st.markdown("""
+©RentAnalyser, 2024. All rights reserved.  Unauthorized reproduction or distribution of its contents is prohibited.  
+""")
+
+
