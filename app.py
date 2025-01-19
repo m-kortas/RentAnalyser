@@ -81,6 +81,7 @@ def download_latest_rental_bond_data():
 
 download_latest_rental_bond_data()
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
+st.cache_data.clear() 
 
 #@st.cache_data
 def get_newest_file():
