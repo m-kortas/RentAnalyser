@@ -232,7 +232,6 @@ Missing data for a particular suburb means that no property of this type was ren
 """)
 
 bonds_data = get_newest_file()
-logging.info(f"bonds_data")
 cleaned_text = re.sub(r"Rental bond lodgement data -\s*|\(.*?\)", "", bonds_data).strip()
 
 st.markdown(f"""
