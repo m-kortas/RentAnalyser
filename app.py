@@ -85,20 +85,36 @@ st.cache_data.clear()
 
 
 
-def get_newest_file():
+def get_newest_file_by_date():
+    # Get all files in the 'downloads' directory
     files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
-    
-    # Log file names and rounded modification times for clarity
-    for f in files:
-        file_path = os.path.join('downloads', f)
-        mod_time = os.path.getmtime(file_path)
-        logging.info(f"{f} - Modification Time: {mod_time}")
 
-    # Use rounded modification times for comparison
-    newest_file = max(files, key=lambda f: round(os.path.getmtime(os.path.join('downloads', f)), 3))
-    
-    logging.info(f"Newest File: {newest_file}")
+    # Log files for debugging
+    logging.info(f"Files in directory: {files}")
+
+    # Regex to extract year and month from the file name
+    date_pattern = re.compile(r"(\bJanuary|\bFebruary|\bMarch|\bApril|\bMay|\bJune|\bJuly|\bAugust|\bSeptember|\bOctober|\bNovember|\bDecember)\s(\d{4})")
+
+    def extract_year_month(file_name):
+        match = date_pattern.search(file_name)
+        if match:
+            month_str, year = match.groups()
+            # Convert month name to a number (e.g., January -> 1)
+            month_num = {
+                "January": 1, "February": 2, "March": 3, "April": 4,
+                "May": 5, "June": 6, "July": 7, "August": 8,
+                "September": 9, "October": 10, "November": 11, "December": 12
+            }[month_str]
+            return int(year), month_num
+        return 0, 0  # Default for files without a date
+
+    # Find the newest file based on extracted year and month
+    newest_file = max(files, key=lambda f: extract_year_month(f))
+
+    # Log the selected file
+    logging.info(f"Newest File (by year and month): {newest_file}")
     return newest_file
+
 
 
     
