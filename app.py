@@ -85,7 +85,7 @@ st.cache_data.clear()
 
 
 
-def get_newest_file_by_date():
+def get_newest_file():
     # Get all files in the 'downloads' directory
     files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
 
