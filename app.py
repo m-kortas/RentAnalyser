@@ -84,22 +84,22 @@ st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 st.cache_data.clear() 
 
 
-def get_newest_file():
-    # Get all files in the 'downloads' directory
-    files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
 
-    # Log file names and their modification times
+def get_newest_file():
+    files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
+    
+    # Log file names and rounded modification times for clarity
     for f in files:
         file_path = os.path.join('downloads', f)
         mod_time = os.path.getmtime(file_path)
         logging.info(f"{f} - Modification Time: {mod_time}")
 
-    # Find the newest file based on modification time
-    newest_file = max(files, key=lambda f: os.path.getmtime(os.path.join('downloads', f)))
-
-    # Log the newest file
+    # Use rounded modification times for comparison
+    newest_file = max(files, key=lambda f: round(os.path.getmtime(os.path.join('downloads', f)), 3))
+    
     logging.info(f"Newest File: {newest_file}")
     return newest_file
+
 
     
 @st.cache_data
