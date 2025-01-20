@@ -83,16 +83,24 @@ download_latest_rental_bond_data()
 st.set_page_config(page_title="Explore Sydney's Latest Rental Trends")
 st.cache_data.clear() 
 
-#@st.cache_data
-def get_newest_file():
-    files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
-    for f in files:
-        print(f"{f} - {os.path.getmtime(os.path.join('downloads', f))}")
-        logging.info(files)
 
+def get_newest_file():
+    # Get all files in the 'downloads' directory
+    files = [f for f in os.listdir('downloads') if os.path.isfile(os.path.join('downloads', f))]
+
+    # Log file names and their modification times
+    for f in files:
+        file_path = os.path.join('downloads', f)
+        mod_time = os.path.getmtime(file_path)
+        logging.info(f"{f} - Modification Time: {mod_time}")
+
+    # Find the newest file based on modification time
     newest_file = max(files, key=lambda f: os.path.getmtime(os.path.join('downloads', f)))
-    logging.info(newest_file)
+
+    # Log the newest file
+    logging.info(f"Newest File: {newest_file}")
     return newest_file
+
     
 @st.cache_data
 def download_data(data):
