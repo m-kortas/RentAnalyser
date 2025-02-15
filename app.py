@@ -245,8 +245,8 @@ def create_map(merged_df):
         initial_view_state=view_state,
         tooltip={
             "html": "<b>Suburb:</b> {Name}<br/>" + 
-                   "<b>Median Weekly Rent:</b> ${Median_Weekly_Rent}<br/>" +
-                   "<b>Available Properties:</b> {Property_Count}",
+                   "<b>Median Weekly Rent (Postcode):</b> ${Median_Weekly_Rent}<br/>" +
+                   "<b>Available Properties (Postcode):</b> {Property_Count}",
             "style": {"backgroundColor": "steelblue", "color": "white"}
         }
     )
