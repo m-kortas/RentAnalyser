@@ -155,11 +155,15 @@ def get_data(Sydney_area_postcode, bonds, bedrooms, dwelling):
     filtered_bonds = bonds[mask].copy()
     filtered_bonds['Weekly Rent'] = pd.to_numeric(filtered_bonds['Weekly Rent'], errors='coerce')
     
-    # Use more efficient groupby operation
-    prices = filtered_bonds.groupby('Postcode', observed=True)['Weekly Rent'].median().reset_index()
-    prices.rename(columns={'Weekly Rent': 'Median_Weekly_Rent'}, inplace=True)
+    # Calculate both median rent and count of properties
+    grouped = filtered_bonds.groupby('Postcode', observed=True).agg({
+        'Weekly Rent': ['median', 'count']
+    }).reset_index()
     
-    return pd.merge(Sydney_area_postcode, prices, on='Postcode', how='inner')
+    # Flatten column names
+    grouped.columns = ['Postcode', 'Median_Weekly_Rent', 'Property_Count']
+    
+    return pd.merge(Sydney_area_postcode, grouped, on='Postcode', how='inner')
 
 @st.cache_data
 def process_geojson_data(_gdf, postcode_data):
@@ -184,9 +188,8 @@ def process_geojson_data(_gdf, postcode_data):
     merged_data['Geolocation'] = merged_data['geometry'].apply(
         lambda x: json.loads(gpd.GeoSeries([x]).to_json())['features'][0]['geometry']
     )
-
     
-    return merged_data[['Name', 'Median_Weekly_Rent', 'Geolocation']]
+    return merged_data[['Name', 'Median_Weekly_Rent', 'Property_Count', 'Geolocation']]
 
 @st.cache_data
 def create_map(merged_df):
@@ -227,7 +230,7 @@ def create_map(merged_df):
     
     column_layer = pdk.Layer(
         "ColumnLayer",
-        data=gdf[['Name', 'Median_Weekly_Rent', 'lat', 'lon', 'color']],
+        data=gdf[['Name', 'Median_Weekly_Rent', 'Property_Count', 'lat', 'lon', 'color']],
         get_position=['lon', 'lat'],
         get_elevation='Median_Weekly_Rent',
         elevation_scale=2,
@@ -241,7 +244,9 @@ def create_map(merged_df):
         layers=[column_layer],
         initial_view_state=view_state,
         tooltip={
-            "html": "<b>Suburb:</b> {Name}<br/><b>Median Weekly Rent:</b> ${Median_Weekly_Rent}",
+            "html": "<b>Suburb:</b> {Name}<br/>" + 
+                   "<b>Median Weekly Rent:</b> ${Median_Weekly_Rent}<br/>" +
+                   "<b>Available Properties:</b> {Property_Count}",
             "style": {"backgroundColor": "steelblue", "color": "white"}
         }
     )
