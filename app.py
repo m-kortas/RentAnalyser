@@ -70,12 +70,12 @@ def download_latest_rental_bond_data():
             else:
                 print("Empty last run file found, will proceed with check")
     
-    #if current_day == 12:
-    download_bond_data()
+    if current_day == 12:
+        download_bond_data()
         
         # Update the last run file with just the day
-    with open(last_run_file, "w") as file:
-            file.write(str(current_day))
+        with open(last_run_file, "w") as file:
+                file.write(str(current_day))
    # else:
       #  print(f"Current day is {current_day}, waiting for day 12 to download new data")
 
