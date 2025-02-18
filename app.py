@@ -230,7 +230,7 @@ def create_map(merged_df):
     
     column_layer = pdk.Layer(
         "ColumnLayer",
-        data=gdf[['Name', 'Median_Weekly_Rent', 'Property_Count', 'lat', 'lon', 'color', 'Postcode']],
+        data=gdf[['Name', 'Median_Weekly_Rent', 'Property_Count', 'lat', 'lon', 'color']],
         get_position=['lon', 'lat'],
         get_elevation='Median_Weekly_Rent',
         elevation_scale=2,
@@ -244,7 +244,7 @@ def create_map(merged_df):
         layers=[column_layer],
         initial_view_state=view_state,
         tooltip={
-            "html": "<b>Suburb:</b> {Name} {Postcode}<br/>" + 
+            "html": "<b>Suburb:</b> {Name} <br/>" + 
                    "<b>Median Weekly Rent (Postcode):</b> ${Median_Weekly_Rent}<br/>" +
                    "<b>Available Properties (Postcode):</b> {Property_Count}",
             "style": {"backgroundColor": "steelblue", "color": "white"}
