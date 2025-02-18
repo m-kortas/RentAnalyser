@@ -257,7 +257,7 @@ st.title("Explore Sydney's Latest Rental Trends")
 st.markdown("""
 This app presents real rental data sourced directly from **NSW Government**, the most up-to-date and reliable source available. 
 The data is generally one month behind, as it reflects rental information collected at the start of each month for the previous month.
-The app is updated on the **12th day of each month** to ensure the latest data is presented.
+The app is updated automatically **each month** with the latest governmental data, if available.
 Missing data for a particular suburb means that no property of this type was rented in the previous month in that area.
 """)
 
