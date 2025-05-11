@@ -19,27 +19,49 @@ st.cache_data.clear()
 
 def download_bond_data():
     url = "https://www.nsw.gov.au/housing-and-construction/rental-forms-surveys-and-data/rental-bond-data"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    print(f"Requesting data from: {url}")
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        soup = BeautifulSoup(response.content, 'html.parser')
+    except Exception as e:
+        print(f"Error fetching the webpage: {e}")
+        return
 
     bond_lodgements_section = soup.find('h2', string='Bond lodgements')
     if bond_lodgements_section:
         first_link = bond_lodgements_section.find_next('a', href=re.compile(r'\.xlsx$'))
         if first_link:
-            file_url = "https://www.nsw.gov.au" + first_link['href']
+            # Fix URL construction
+            href = first_link['href']
+            if href.startswith('http'):
+                file_url = href  # Use the full URL if it's already absolute
+            elif href.startswith('//'):
+                file_url = 'https:' + href  # Add protocol if it's protocol-relative
+            else:
+                # Make sure the href doesn't start with a slash if we're adding the domain
+                if href.startswith('/'):
+                    file_url = "https://www.nsw.gov.au" + href
+                else:
+                    file_url = "https://www.nsw.gov.au/" + href
+            
+            print(f"Attempting to download from URL: {file_url}")
             file_name = first_link.text.strip()
 
-            file_response = requests.get(file_url)
-            if file_response.status_code == 200:
-                if not os.path.exists('downloads'):
-                    os.makedirs('downloads')
+            try:
+                file_response = requests.get(file_url)
+                if file_response.status_code == 200:
+                    if not os.path.exists('downloads'):
+                        os.makedirs('downloads')
 
-                file_path = os.path.join('downloads', file_name)
-                with open(file_path, 'wb') as file:
-                    file.write(file_response.content)
-                print(f"Downloaded: {file_name}")
-            else:
-                print("Failed to download the file")
+                    file_path = os.path.join('downloads', file_name)
+                    with open(file_path, 'wb') as file:
+                        file.write(file_response.content)
+                    print(f"Downloaded: {file_name}")
+                else:
+                    print(f"Failed to download the file. Status code: {file_response.status_code}")
+            except Exception as e:
+                print(f"Error downloading file: {e}")
         else:
             print("No XLSX link found in the Bond lodgements section")
     else:
