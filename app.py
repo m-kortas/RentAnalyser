@@ -333,8 +333,8 @@ with st.spinner('Updating visualization...'):
 st.markdown("""
 The map uses color coding to represent different rental price ranges:
 
-- **Light Blue**: Rent prices up to the 25th percentile (lower range).
-- **Sky Blue**: Rent prices between the 25th and 50th percentiles (moderate range).
+- **Sky Blue**: Rent prices up to the 25th percentile (lower range).
+- **Light Blue**: Rent prices between the 25th and 50th percentiles (moderate range).
 - **Yellow**: Rent prices between the 50th percentile and 75th percentile(higher middle range).
 - **Red**: Rent prices above 75th percentile (premium range).
 
