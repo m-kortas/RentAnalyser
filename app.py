@@ -197,12 +197,11 @@ def process_geojson_data(_gdf, postcode_data):
         right_on='nsw_loca_2',
         how='inner'
     )
-    if merged_data['geometry'].dtype == 'object':
-        geometry = gpd.GeoSeries.from_wkt(merged_data['geometry'])
-        merged_data = merged_data.drop(columns=['geometry'])
-        merged_data = gpd.GeoDataFrame(merged_data, geometry=geometry)
-    else:
-        merged_data = gpd.GeoDataFrame(merged_data, geometry='geometry')
+    geometry = gpd.GeoSeries.from_wkt(merged_data['geometry'].astype(str))
+    merged_data = gpd.GeoDataFrame(
+        merged_data.drop(columns=['geometry']),
+        geometry=geometry
+    )
     
     # Now you can safely apply the GeoJSON conversion
     merged_data['Geolocation'] = merged_data['geometry'].apply(
