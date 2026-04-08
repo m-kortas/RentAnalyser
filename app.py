@@ -198,13 +198,11 @@ def process_geojson_data(_gdf, postcode_data):
         how='inner'
     )
     if merged_data['geometry'].dtype == 'object':
-        merged_data['geometry'] = gpd.GeoSeries.from_wkt(merged_data['geometry'])
-
-    # Ensure 'geometry' is recognized as valid geometry objects
-    merged_data = gpd.GeoDataFrame(merged_data, geometry='geometry')
-    
-    # Check if the conversion worked
-    print(merged_data['geometry'].head())  # Check if the conversion was successful
+        geometry = gpd.GeoSeries.from_wkt(merged_data['geometry'])
+        merged_data = merged_data.drop(columns=['geometry'])
+        merged_data = gpd.GeoDataFrame(merged_data, geometry=geometry)
+    else:
+        merged_data = gpd.GeoDataFrame(merged_data, geometry='geometry')
     
     # Now you can safely apply the GeoJSON conversion
     merged_data['Geolocation'] = merged_data['geometry'].apply(
