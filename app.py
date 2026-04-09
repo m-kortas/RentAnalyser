@@ -187,7 +187,6 @@ def get_data(Sydney_area_postcode, bonds, bedrooms, dwelling):
     
     return pd.merge(Sydney_area_postcode, grouped, on='Postcode', how='inner')
 
-@st.cache_data
 def process_geojson_data(_gdf, postcode_data):
     # Perform spatial join using GeoDataFrame
     merged_data = pd.merge(
@@ -210,7 +209,6 @@ def process_geojson_data(_gdf, postcode_data):
     
     return merged_data[['Name', 'Median_Weekly_Rent', 'Property_Count', 'Geolocation']]
 
-@st.cache_data
 def create_map(merged_df):
     if merged_df.empty:
         st.write("No properties available for the selected filters.")
@@ -314,6 +312,28 @@ logging.info(f"User searched with Bedrooms: {selected_bedrooms}, Dwelling Types:
 
 with st.spinner('Updating visualization...'):
     filtered_data = get_data(Sydney_area_postcode, bonds, selected_bedrooms, selected_dwelling)
+
+    if not filtered_data.empty:
+        # Prepare and offer data for download
+        output_df = filtered_data.rename(columns={
+            'Name': 'Suburb Name',
+            'Median_Weekly_Rent': 'Median Weekly Rent',
+            'Property_Count': 'Available Properties'
+        })
+        output_df = output_df[['Suburb Name', 'Median Weekly Rent', 'Available Properties', 'Postcode']]
+
+        from io import BytesIO
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            output_df.to_excel(writer, index=False, sheet_name='Rent Analysis')
+
+        st.download_button(
+            label="Download Results as Excel",
+            data=output.getvalue(),
+            file_name="rent_analysis_results.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        
     merged_df = process_geojson_data(gdf, filtered_data)
     
     if merged_df.empty:
